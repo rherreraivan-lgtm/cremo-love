@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cremo Love – Para llevar</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#ff4d6d">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>🍦 Cremo Love</h1>
+    <p class="tagline">Pedidos para llevar y a domicilio</p>
+  </div>
+  <button id="installBtn" class="ghost" hidden>Instalar app</button>
+</header>
+
+<main>
+  <section id="notice" class="notice">
+    <p><strong>Tip:</strong> Puedes instalar esta app en tu teléfono. Toca “Compartir” → “Añadir a pantalla de inicio”.</p>
+  </section>
+
+  <section id="menu">
+    <h2>Menú</h2>
+    <div class="grid" id="products"></div>
+  </section>
+
+  <section id="cart">
+    <h2>Tu pedido</h2>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-summary">
+      <label>Notas del pedido
+        <textarea id="orderNotes" placeholder="Ej. sin azúcar, extra topping, etc."></textarea>
+      </label>
+      <div class="row">
+        <div>Total:</div>
+        <div id="cartTotal">$0.00</div>
+      </div>
+      <button id="clearCart" class="ghost">Vaciar carrito</button>
+    </div>
+  </section>
+
+  <section id="checkout">
+    <h2>Entrega</h2>
+    <div class="form">
+      <label>Nombre
+        <input id="custName" type="text" placeholder="Tu nombre" required>
+      </label>
+      <label>Teléfono
+        <input id="custPhone" type="tel" placeholder="+1 303 123 4567" required>
+      </label>
+      <fieldset>
+        <legend>Método</legend>
+        <label class="inline"><input type="radio" name="method" value="pickup" checked> Recoger</label>
+        <label class="inline"><input type="radio" name="method" value="delivery"> Domicilio</label>
+      </fieldset>
+      <div id="addressWrap" class="hidden">
+        <label>Dirección
+          <input id="custAddress" type="text" placeholder="Calle, número, ciudad">
+        </label>
+      </div>
+      <label>Hora estimada
+        <select id="custTime">
+          <option value="Lo antes posible">Lo antes posible</option>
+          <option>30 minutos</option>
+          <option>1 hora</option>
+          <option>Hoy tarde</option>
+        </select>
+      </label>
+      
+      <label>Cupón de descuento
+        <input id="couponCode" type="text" placeholder="Ej.: CREMO10">
+      </label>
+      <fieldset>
+        <legend>Zona de domicilio (si eliges Domicilio)</legend>
+        <label class="inline"><input type="radio" name="zone" value="center" checked> Centro Denver ($3)</label>
+        <label class="inline"><input type="radio" name="zone" value="near"> Zona cercana ($5)</label>
+        <label class="inline"><input type="radio" name="zone" value="far"> Zona extendida ($8)</label>
+      </fieldset>
+      <div class="row">
+        <button id="sendWA" class="cta">Enviar pedido por WhatsApp</button>
+        <a id="callBtn" class="ghost" href="tel:+13862780636">Llamar</a>
+      </div>
+      <div class="muted xs">También puedes pegar este QR en tu local para abrir el chat y el menú:</div>
+      <img src="assets/img/qr_menu.png" alt="QR Cremo Love" style="max-width:180px;display:block;margin-top:8px;">
+    
+      <p class="muted">Si no usas WhatsApp, <a id="mailtoLink" href="#">envía por correo</a>.</p>
+      <p class="muted center xs">*Pago al recoger o contraentrega.</p>
+    </div>
+  </section>
+  <section id="about">
+    <h2>Acerca de</h2>
+    <div class="card" style="padding:12px;">
+      <p><strong>Cremo Love – Helados cremosos y paletas artesanales.</strong></p>
+      <p>Zona: Denver y alrededores · Horario: 9:00 am – 9:00 pm, Lunes a Domingo</p>
+      <p class="muted">Personaliza horarios, zonas y política de entrega en el archivo <code>index.html</code>.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <small>© <span id="year"></span> Cremo Love • Hecho con ❤️ por Iván RH</small>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
