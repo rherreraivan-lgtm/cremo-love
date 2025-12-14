@@ -1,110 +1,200 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cremo Love – Para llevar</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cremo Love — Ventas, Ganancias e Inventario</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icons/icon-192.png">
-  <meta name="theme-color" content="#ff4d6d">
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    body{font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin:16px; max-width:980px}
+    h1{margin:0 0 4px}
+    small{color:#555}
+    nav{display:flex; gap:8px; margin:14px 0; flex-wrap:wrap}
+    nav button{padding:10px 12px; border:1px solid #ccc; background:#fff; border-radius:10px}
+    nav button.active{border-color:#111; font-weight:800}
+    section{border:1px solid #eee; border-radius:12px; padding:12px; margin-bottom:12px}
+    label{display:block; margin-top:10px; font-size:14px}
+    input, select{width:100%; padding:10px; border:1px solid #ccc; border-radius:10px; font-size:16px}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .btn{margin-top:12px; padding:12px; border:0; border-radius:12px; background:#111; color:#fff; font-size:16px; font-weight:800}
+    table{width:100%; border-collapse:collapse; margin-top:10px}
+    th,td{border-bottom:1px solid #eee; padding:8px; text-align:left; font-size:14px; vertical-align:top}
+    .pill{display:inline-block; padding:4px 8px; border-radius:999px; background:#f3f3f3; font-size:12px}
+    .danger{color:#b00020; font-weight:800}
+    .ok{color:#0a7a2f; font-weight:800}
+    .muted{color:#666}
+    .mini{padding:8px 10px; border-radius:10px; border:1px solid #ddd; background:#fff}
+  </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <h1>🍦 Cremo Love</h1>
-    <p class="tagline">Pedidos para llevar y a domicilio</p>
+  <h1>🍦 Cremo Love</h1>
+  <small>Control de ventas, ganancias, caja e inventario (solo para ti). Todo se guarda en este iPhone.</small>
+
+  <nav>
+    <button class="active" data-tab="ventas">Ventas</button>
+    <button data-tab="inventario">Inventario</button>
+    <button data-tab="gastos">Gastos</button>
+    <button data-tab="caja">Caja</button>
+    <button data-tab="reportes">Reportes</button>
+  </nav>
+
+  <!-- VENTAS -->
+  <div id="ventas">
+    <section>
+      <h2>Registrar venta</h2>
+      <div class="row">
+        <div>
+          <label>Fecha</label>
+          <input id="saleDate" type="date">
+        </div>
+        <div>
+          <label>Método de pago</label>
+          <select id="salePay">
+            <option value="cash">Efectivo</option>
+            <option value="zelle">Zelle</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Sabor</label>
+      <select id="saleFlavor"></select>
+
+      <div class="row">
+        <div>
+          <label>Cantidad (unidades)</label>
+          <input id="saleQty" type="number" min="1" value="1">
+        </div>
+        <div>
+          <label>Precio de venta (por unidad)</label>
+          <input id="salePrice" type="number" step="0.01" value="6">
+        </div>
+      </div>
+
+      <button class="btn" onclick="addSale()">Guardar venta</button>
+      <div id="salesList"></div>
+    </section>
   </div>
-  <button id="installBtn" class="ghost" hidden>Instalar app</button>
-</header>
+    <!-- INVENTARIO -->
+  <div id="inventario" style="display:none">
+    <section>
+      <h2>Inventario por sabor</h2>
+      <p class="muted">Aquí defines cuántas unidades tienes por sabor. Cada venta descuenta automáticamente.</p>
 
-<main>
-  <section id="notice" class="notice">
-    <p><strong>Tip:</strong> Puedes instalar esta app en tu teléfono. Toca “Compartir” → “Añadir a pantalla de inicio”.</p>
-  </section>
-
-  <section id="menu">
-    <h2>Menú</h2>
-    <div class="grid" id="products"></div>
-  </section>
-
-  <section id="cart">
-    <h2>Tu pedido</h2>
-    <div id="cartItems" class="cart-items"></div>
-    <div class="cart-summary">
-      <label>Notas del pedido
-        <textarea id="orderNotes" placeholder="Ej. sin azúcar, extra topping, etc."></textarea>
-      </label>
       <div class="row">
-        <div>Total:</div>
-        <div id="cartTotal">$0.00</div>
+        <div>
+          <label>Fecha</label>
+          <input id="invDate" type="date">
+        </div>
+        <div>
+          <label>Sabor</label>
+          <select id="invFlavor"></select>
+        </div>
       </div>
-      <button id="clearCart" class="ghost">Vaciar carrito</button>
-    </div>
-  </section>
 
-  <section id="checkout">
-    <h2>Entrega</h2>
-    <div class="form">
-      <label>Nombre
-        <input id="custName" type="text" placeholder="Tu nombre" required>
-      </label>
-      <label>Teléfono
-        <input id="custPhone" type="tel" placeholder="+1 303 123 4567" required>
-      </label>
-      <fieldset>
-        <legend>Método</legend>
-        <label class="inline"><input type="radio" name="method" value="pickup" checked> Recoger</label>
-        <label class="inline"><input type="radio" name="method" value="delivery"> Domicilio</label>
-      </fieldset>
-      <div id="addressWrap" class="hidden">
-        <label>Dirección
-          <input id="custAddress" type="text" placeholder="Calle, número, ciudad">
-        </label>
-      </div>
-      <label>Hora estimada
-        <select id="custTime">
-          <option value="Lo antes posible">Lo antes posible</option>
-          <option>30 minutos</option>
-          <option>1 hora</option>
-          <option>Hoy tarde</option>
-        </select>
-      </label>
-      
-      <label>Cupón de descuento
-        <input id="couponCode" type="text" placeholder="Ej.: CREMO10">
-      </label>
-      <fieldset>
-        <legend>Zona de domicilio (si eliges Domicilio)</legend>
-        <label class="inline"><input type="radio" name="zone" value="center" checked> Centro Denver ($3)</label>
-        <label class="inline"><input type="radio" name="zone" value="near"> Zona cercana ($5)</label>
-        <label class="inline"><input type="radio" name="zone" value="far"> Zona extendida ($8)</label>
-      </fieldset>
       <div class="row">
-        <button id="sendWA" class="cta">Enviar pedido por WhatsApp</button>
-        <a id="callBtn" class="ghost" href="tel:+13862780636">Llamar</a>
+        <div>
+          <label>Tipo de movimiento</label>
+          <select id="invType">
+            <option value="in">Entrada (producción / compra)</option>
+            <option value="adjust">Ajuste (corregir conteo)</option>
+          </select>
+        </div>
+        <div>
+          <label>Cantidad</label>
+          <input id="invQty" type="number" step="1" value="0">
+        </div>
       </div>
-      <div class="muted xs">También puedes pegar este QR en tu local para abrir el chat y el menú:</div>
-      <img src="assets/img/qr_menu.png" alt="QR Cremo Love" style="max-width:180px;display:block;margin-top:8px;">
-    
-      <p class="muted">Si no usas WhatsApp, <a id="mailtoLink" href="#">envía por correo</a>.</p>
-      <p class="muted center xs">*Pago al recoger o contraentrega.</p>
-    </div>
-  </section>
-  <section id="about">
-    <h2>Acerca de</h2>
-    <div class="card" style="padding:12px;">
-      <p><strong>Cremo Love – Helados cremosos y paletas artesanales.</strong></p>
-      <p>Zona: Denver y alrededores · Horario: 9:00 am – 9:00 pm, Lunes a Domingo</p>
-      <p class="muted">Personaliza horarios, zonas y política de entrega en el archivo <code>index.html</code>.</p>
-    </div>
-  </section>
-</main>
 
-<footer>
-  <small>© <span id="year"></span> Cremo Love • Hecho con ❤️ por Iván RH</small>
-</footer>
+      <label>Nota (opcional)</label>
+      <input id="invNote" placeholder="Ej: hice 30 de Oreo / conteo físico">
 
-<script src="app.js"></script>
+      <button class="btn" onclick="saveInventoryMove()">Guardar movimiento</button>
+
+      <div id="invTable"></div>
+      <div id="invMoves"></div>
+    </section>
+  </div>
+
+  <!-- GASTOS -->
+  <div id="gastos" style="display:none">
+    <section>
+      <h2>Registrar gasto (Tarjeta)</h2>
+      <div class="row">
+        <div>
+          <label>Fecha</label>
+          <input id="expDate" type="date">
+        </div>
+        <div>
+          <label>Categoría</label>
+          <select id="expCat">
+            <option>Ingredientes</option>
+            <option>Empaques</option>
+            <option>Gasolina</option>
+            <option>Publicidad</option>
+            <option>Comisiones</option>
+            <option>Otro</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Descripción</label>
+      <input id="expDesc" placeholder="Ej: compra vasos, crema, etc.">
+
+      <label>Valor ($)</label>
+      <input id="expAmt" type="number" step="0.01" value="0">
+
+      <button class="btn" onclick="addExpense()">Guardar gasto</button>
+      <div id="expList"></div>
+    </section>
+  </div>
+
+  <!-- CAJA -->
+  <div id="caja" style="display:none">
+    <section>
+      <h2>Control de caja diaria (Efectivo)</h2>
+
+      <div class="row">
+        <div>
+          <label>Fecha</label>
+          <input id="cashDate" type="date">
+        </div>
+        <div>
+          <label>Cash inicial ($)</label>
+          <input id="cashOpen" type="number" step="0.01" value="0">
+        </div>
+      </div>
+
+      <label>Cash final contado ($)</label>
+      <input id="cashActual" type="number" step="0.01" value="0">
+
+      <button class="btn" onclick="saveCash()">Guardar caja</button>
+
+      <div id="cashSummary"></div>
+      <small>*Aquí solo cuenta el efectivo. Zelle y gastos en tarjeta no cambian la caja.</small>
+    </section>
+  </div>
+
+  <!-- REPORTES -->
+  <div id="reportes" style="display:none">
+    <section>
+      <h2>Reportes (día / semana / mes)</h2>
+
+      <div class="row">
+        <div>
+          <label>Desde</label>
+          <input id="rFrom" type="date">
+        </div>
+        <div>
+          <label>Hasta</label>
+          <input id="rTo" type="date">
+        </div>
+      </div>
+
+      <button class="btn" onclick="renderReport()">Ver reporte</button>
+      <div id="reportOut"></div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
